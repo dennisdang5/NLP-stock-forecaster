@@ -5,8 +5,8 @@ from pathlib import Path
 
 # Prediction targets
 TICKERS = ['AAPL', 'MSFT', 'NVDA']
-START_DATE = '2024-07-01'
-END_DATE = '2025-07-01'
+START_DATE = '2026-01-01'
+END_DATE = '2026-07-08'
 
 # Directory paths
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
