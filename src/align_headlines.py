@@ -21,3 +21,28 @@ def points_to(timestamp):
     if timestamp.time() < market_open:
         return timestamp.date()
     return (timestamp + pd.Timedelta(days=1)).date()
+
+news['target_date'] = pd.to_datetime(news['published_eastern_time'].apply(points_to))
+
+# Match each headline's target date with the correct real trading day either at or after the date it points to and attaches the session's up/down label
+labels = labels.copy()
+labels['day'] = pd.to_datetime(labels['day'])
+
+news = news.sort_values('target_date')
+labels = labels.sort_values('day')
+
+aligned = pd.merge_asof(
+    news, labels,
+    left_on='target_date', right_on='day',
+    by='ticker',
+    direction='forward' # find the next trading day >= target_date
+)
+
+# Drop headlines with no future session yet
+before = len(aligned)
+aligned = aligned.dropna(subset=['label'])
+aligned['label'] = aligned['label'].astype(int)
+dropped = before - len(aligned)
+
+aligned.to_parquet(INTERIM_DIR / 'aligned_headlines.parquet')
+print(f'Aligned {len(aligned)} headlines ({dropped} dropped as too recent)')

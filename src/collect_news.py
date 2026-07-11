@@ -6,15 +6,23 @@ from dotenv import load_dotenv
 from src.config import TICKERS, START_DATE, END_DATE, RAW_NEWS_DIR
 
 load_dotenv()
-API_KEY = os.getenv('FINNHUB_API_KEY')
+API_KEY = os.getenv('EODHD_API_KEY')
 
 """
 Get raw news for one ticker
 """
 def fetch_news(ticker):
     response = requests.get(
-        'https://finnhub.io/api/v1/company-news',
-        params= {'symbol': ticker, 'from': START_DATE, 'to': END_DATE, 'token': API_KEY},
+        'https://eodhd.com/api/news',
+        params= {
+            's': f'{ticker}.US',
+            'from':START_DATE,
+            'to':END_DATE,
+            'limit':1000,
+            'offset':0,
+            'api_token':API_KEY,
+            'fmt':'json'
+        },
         timeout= 30
     )
     response.raise_for_status()
@@ -26,10 +34,9 @@ for ticker in TICKERS:
     for article in articles:
         all_news.append({
             'ticker': ticker,
-            'published_at': pd.to_datetime(article['datetime'], unit='s', utc=True),
-            'headline': article['headline'],
-            'source': article['source'],
-            'url': article['url']
+            'published_at': pd.to_datetime(article['date'], utc=True),
+            'headline': article['title'],
+            'url': article.get('link', '')
         })
     print(f'{ticker}: {len(articles)} headlines') # Number of headlines for that specific ticker
     time.sleep(1.5) # Prevent api throttling
