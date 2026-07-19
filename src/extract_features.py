@@ -14,3 +14,4 @@ model.eval() # Frozen
 aligned_headlines = pd.read_parquet(INTERIM_DIR / 'aligned_headlines.parquet')
 headlines = aligned_headlines['headline'].tolist()
 
+def get_sentiment(texts, batch_size=32):
