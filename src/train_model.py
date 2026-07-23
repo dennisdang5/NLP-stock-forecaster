@@ -31,6 +31,6 @@ logistic_accuracy = accuracy_score(y_test, logistic_prediction)
 # Baseline from guessing majority class in the test set
 majority_baseline = max(y_test.mean(), 1 - y_test.mean())
 
-print(f'\nModel accuracy: {accuracy_score:.3f}')
+print(f'\nModel accuracy: {logistic_accuracy:.3f}')
 print(f'Majority baseline: {majority_baseline:.3f}')
 print(f'\n{classification_report(y_test, logistic_prediction, zero_division=0)}')
